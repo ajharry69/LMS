@@ -16,10 +16,16 @@ import io.swagger.v3.oas.annotations.servers.Server;
                 title = "OpenAPI specification - LMS",
                 version = "v1"
         ),
-        servers = {@Server(
-                description = "Development",
-                url = "http://localhost:8080"
-        )}
+        servers = {
+                @Server(
+                        description = "Development",
+                        url = "http://localhost:8080"
+                ),
+                @Server(
+                        description = "Ngrok",
+                        url = "https://fdda-105-163-2-85.ngrok-free.app/"
+                )
+        }
 )
 public class OpenAPIConfig {
 }

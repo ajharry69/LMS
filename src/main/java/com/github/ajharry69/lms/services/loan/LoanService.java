@@ -40,8 +40,8 @@ public class LoanService {
         var scoringResponse = scoringApiClient.getScore(request.customerNumber(), transactions);
 
         var loanStatus = determineLoanStatus(
-                scoringResponse.getScore(),
-                scoringResponse.getLimitAmount(),
+                scoringResponse.score(),
+                scoringResponse.limitAmount(),
                 request.amount()
         );
 
@@ -50,8 +50,8 @@ public class LoanService {
                         .customer(customer)
                         .amount(request.amount())
                         .status(loanStatus)
-                        .score(scoringResponse.getScore())
-                        .limitAmount(scoringResponse.getLimitAmount())
+                        .score(scoringResponse.score())
+                        .limitAmount(scoringResponse.limitAmount())
                         .build()
         );
 

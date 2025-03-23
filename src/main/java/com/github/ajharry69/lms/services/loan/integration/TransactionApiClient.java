@@ -1,16 +1,19 @@
 package com.github.ajharry69.lms.services.loan.integration;
 
+import com.github.ajharry69.lms.config.LmsProperties;
 import com.github.ajharry69.lms.services.loan.integration.transaction.wsdl.TransactionsRequest;
 import com.github.ajharry69.lms.services.loan.integration.transaction.wsdl.TransactionsResponse;
 import com.github.ajharry69.lms.services.loan.model.Transaction;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Component;
-import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import org.springframework.ws.transport.http.HttpUrlConnectionMessageSender;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,32 +21,38 @@ import static java.util.Base64.getEncoder;
 
 @Component
 @Slf4j
-public class TransactionApiClient {
-    private static final String TRANSACTION_API_USERNAME = "admin";
-    private static final String TRANSACTION_API_PASSWORD = "pwd123";
-    private final WebServiceTemplate webServiceTemplate;
+public class TransactionApiClient extends WebServiceGatewaySupport {
+    private final LmsProperties lmsProperties;
 
-    public TransactionApiClient(@Qualifier(value = "transactionWebServiceTemplate") WebServiceTemplate webServiceTemplate) {
-        this.webServiceTemplate = webServiceTemplate;
+    public TransactionApiClient(
+            LmsProperties lmsProperties,
+            @Qualifier(value = "transactionMarshaller")
+            Jaxb2Marshaller marshaller
+    ) {
+        this.lmsProperties = lmsProperties;
+        setMarshaller(marshaller);
+        setUnmarshaller(marshaller);
     }
 
     public List<Transaction> getTransactions(String customerNumber) {
         log.info("Fetching transactions from Transaction API for customer number: {}", customerNumber);
-        var request = new TransactionsRequest();
-        request.setCustomerNumber(customerNumber);
 
         // Set credentials for Basic Authentication in the SOAP request
-        webServiceTemplate.setMessageSender(new HttpUrlConnectionMessageSender() {
+        var messageSender = new HttpUrlConnectionMessageSender() {
             @Override
-            protected void prepareConnection(java.net.HttpURLConnection connection) throws IOException {
+            protected void prepareConnection(HttpURLConnection connection) throws IOException {
                 super.prepareConnection(connection);
-                String authString = TRANSACTION_API_USERNAME + ":" + TRANSACTION_API_PASSWORD;
+                String authString = lmsProperties.username() + ":" + lmsProperties.password();
                 String authEncoded = getEncoder().encodeToString(authString.getBytes());
                 connection.setRequestProperty("Authorization", "Basic " + authEncoded);
             }
-        });
+        };
+        getWebServiceTemplate().setMessageSender(messageSender);
 
-        var response = (TransactionsResponse) webServiceTemplate.marshalSendAndReceive(
+        var request = new TransactionsRequest();
+        request.setCustomerNumber(customerNumber);
+
+        var response = (TransactionsResponse) getWebServiceTemplate().marshalSendAndReceive(
                 "https://trxapitest.credable.io/service/transactionWsdl.wsdl",
                 request,
                 new SoapActionCallback("https://transaction.credable.com/TransactionsRequest")

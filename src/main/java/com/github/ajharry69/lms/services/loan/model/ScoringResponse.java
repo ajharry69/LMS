@@ -1,13 +1,13 @@
 package com.github.ajharry69.lms.services.loan.model;
 
-import lombok.Data;
+import org.springframework.lang.NonNull;
 
-@Data
-public class ScoringResponse {
-    private int id;
-    private String customerNumber;
-    private int score;
-    private double limitAmount;
-    private String exclusion;
-    private String exclusionReason;
+public record ScoringResponse(
+        int id,
+        @NonNull String customerNumber,
+        int score,
+        double limitAmount,
+        String exclusion,
+        String exclusionReason
+) {
 }

@@ -2,8 +2,10 @@ package com.github.ajharry69.lms.services.customer;
 
 import com.github.ajharry69.lms.services.customer.model.Customer;
 import com.github.ajharry69.lms.services.customer.model.CustomerRequest;
+import com.github.ajharry69.lms.utils.ServerUrlProvider;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,11 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/customers")
 @RequiredArgsConstructor
+@Slf4j
 public class CustomerController {
     private final CustomerService customerService;
+    private final ServerUrlProvider serverUrlProvider;
 
     @PostMapping
     public ResponseEntity<Customer> subscribeCustomer(@Valid @RequestBody CustomerRequest request) {
+        log.info("Subscribing to customer from: {}", serverUrlProvider.getServerUrl());
         var customer = customerService.subscribeCustomer(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(customer);
     }

@@ -6,17 +6,18 @@ import com.github.ajharry69.lms.services.customer.integration.wsdl.CustomerReque
 import com.github.ajharry69.lms.services.customer.integration.wsdl.CustomerResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Component;
-import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 
 @Component
 @Slf4j
-public class KycApiClient {
-    private final WebServiceTemplate webServiceTemplate;
-
-    public KycApiClient(@Qualifier(value = "kycWebServiceTemplate") WebServiceTemplate webServiceTemplate) {
-        this.webServiceTemplate = webServiceTemplate;
+public class CustomerApiClient extends WebServiceGatewaySupport {
+    public CustomerApiClient(@Qualifier(value = "customerMarshaller") Jaxb2Marshaller marshaller) {
+        setDefaultUri("http://localhost:8080/ws");
+        setMarshaller(marshaller);
+        setUnmarshaller(marshaller);
     }
 
     public Customer getCustomer(String customerNumber) {
@@ -24,7 +25,7 @@ public class KycApiClient {
         var request = new CustomerRequest();
         request.setCustomerNumber(customerNumber);
 
-        var response = (CustomerResponse) webServiceTemplate.marshalSendAndReceive(
+        var response = (CustomerResponse) getWebServiceTemplate().marshalSendAndReceive(
                 "https://kycapitest.credable.io/service/customerWsdl.wsdl",
                 request,
                 new SoapActionCallback("https://kyc.credable.com/CustomerRequest")
