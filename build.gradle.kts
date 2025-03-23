@@ -40,27 +40,24 @@ tasks.register("wsimport") {
                     "classpath" to configurations.getByName("jaxws").asPath,
                 ),
             )
+            val args = mapOf(
+                "keep" to true,
+                "destdir" to jaxwsSourceDir,
+                "extension" to "true",
+                "verbose" to true,
+                "xnocompile" to true,
+            )
             invokeMethod(
                 "wsimport",
-                mapOf(
-                    "keep" to true,
-                    "destdir" to jaxwsSourceDir,
-                    "extension" to "true",
-                    "verbose" to true,
+                args + mapOf(
                     "wsdl" to "https://kycapitest.credable.io/service/customerWsdl.wsdl",
-                    "xnocompile" to true,
                     "package" to "com.github.ajharry69.lms.services.customer.integration.wsdl",
                 ),
             )
             invokeMethod(
                 "wsimport",
-                mapOf(
-                    "keep" to true,
-                    "destdir" to jaxwsSourceDir,
-                    "extension" to "true",
-                    "verbose" to true,
+                args + mapOf(
                     "wsdl" to "https://trxapitest.credable.io/service/transactionWsdl.wsdl",
-                    "xnocompile" to true,
                     "package" to "com.github.ajharry69.lms.services.loan.integration.transaction.wsdl",
                 ),
             )
