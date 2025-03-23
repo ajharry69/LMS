@@ -20,10 +20,6 @@ import io.swagger.v3.oas.annotations.servers.Server;
                 @Server(
                         description = "Development",
                         url = "http://localhost:8080"
-                ),
-                @Server(
-                        description = "Ngrok",
-                        url = "https://fdda-105-163-2-85.ngrok-free.app/"
                 )
         }
 )
