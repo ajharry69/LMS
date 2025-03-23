@@ -1,4 +1,4 @@
-package com.github.ajharry69.lms.services.loan.integration.transaction;
+package com.github.ajharry69.lms.services.loan.integration;
 
 import com.github.ajharry69.lms.services.loan.integration.transaction.wsdl.TransactionsRequest;
 import com.github.ajharry69.lms.services.loan.integration.transaction.wsdl.TransactionsResponse;

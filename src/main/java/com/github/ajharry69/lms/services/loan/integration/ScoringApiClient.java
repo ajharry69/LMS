@@ -1,4 +1,4 @@
-package com.github.ajharry69.lms.services.loan.integration.scoring;
+package com.github.ajharry69.lms.services.loan.integration;
 
 import com.github.ajharry69.lms.services.loan.exception.ClientRegistrationException;
 import com.github.ajharry69.lms.services.loan.exception.InitiateQueryScoreException;

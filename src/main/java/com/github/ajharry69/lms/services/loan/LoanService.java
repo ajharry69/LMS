@@ -4,8 +4,8 @@ import com.github.ajharry69.lms.services.customer.exception.CustomerNotFoundExce
 import com.github.ajharry69.lms.services.customer.repository.CustomerRepository;
 import com.github.ajharry69.lms.services.loan.exception.LoanNotFoundException;
 import com.github.ajharry69.lms.services.loan.exception.OnGoingLoanException;
-import com.github.ajharry69.lms.services.loan.integration.scoring.ScoringApiClient;
-import com.github.ajharry69.lms.services.loan.integration.transaction.TransactionApiClient;
+import com.github.ajharry69.lms.services.loan.integration.ScoringApiClient;
+import com.github.ajharry69.lms.services.loan.integration.TransactionApiClient;
 import com.github.ajharry69.lms.services.loan.model.*;
 import com.github.ajharry69.lms.services.loan.repository.LoanRepository;
 import lombok.RequiredArgsConstructor;
