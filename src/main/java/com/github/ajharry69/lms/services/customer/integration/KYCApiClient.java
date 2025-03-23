@@ -1,28 +1,26 @@
 package com.github.ajharry69.lms.services.customer.integration;
 
+import com.github.ajharry69.lms.config.LmsProperties;
 import com.github.ajharry69.lms.services.customer.exception.CustomerRetrievalException;
 import com.github.ajharry69.lms.services.customer.integration.wsdl.Customer;
 import com.github.ajharry69.lms.services.customer.integration.wsdl.CustomerRequest;
 import com.github.ajharry69.lms.services.customer.integration.wsdl.CustomerResponse;
-import com.github.ajharry69.lms.utils.SoapLoggingInterceptor;
+import com.github.ajharry69.lms.utils.soap.LmsWebServiceGatewaySupport;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Component;
-import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
-import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 
 @Component
 @Slf4j
-public class KYCApiClient extends WebServiceGatewaySupport {
-    public KYCApiClient(@Qualifier(value = "kycMarshaller") Jaxb2Marshaller marshaller) {
-        setMarshaller(marshaller);
-        setUnmarshaller(marshaller);
-        ClientInterceptor[] interceptors = new ClientInterceptor[] {
-                new SoapLoggingInterceptor()
-        };
-        setInterceptors(interceptors);
+public class KYCApiClient extends LmsWebServiceGatewaySupport {
+    public KYCApiClient(
+            LmsProperties lmsProperties,
+            @Qualifier(value = "kycMarshaller")
+            Jaxb2Marshaller marshaller
+    ) {
+        super(lmsProperties, marshaller);
     }
 
     public Customer getCustomer(String customerNumber) {
@@ -31,7 +29,7 @@ public class KYCApiClient extends WebServiceGatewaySupport {
         request.setCustomerNumber(customerNumber);
 
         var response = (CustomerResponse) getWebServiceTemplate().marshalSendAndReceive(
-                "https://kycapitest.credable.io/service/customerWsdl.wsdl",
+                "https://kycapitest.credable.io/service/",
                 request,
                 new SoapActionCallback("")
         );

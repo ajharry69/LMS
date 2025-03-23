@@ -1,4 +1,4 @@
-package com.github.ajharry69.lms.utils;
+package com.github.ajharry69.lms.utils.soap;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
@@ -12,12 +12,6 @@ import java.nio.charset.StandardCharsets;
 
 @Slf4j
 public class SoapLoggingInterceptor implements ClientInterceptor {
-    enum MessageType {
-        Request,
-        Response,
-        Fault,
-    }
-
     @Override
     public boolean handleRequest(MessageContext messageContext) {
         logSoapMessage(MessageType.Request, messageContext);
@@ -58,5 +52,11 @@ public class SoapLoggingInterceptor implements ClientInterceptor {
             String soapMessageString = buffer.toString(StandardCharsets.UTF_8);
             log.debug("SOAP {} : \n{}", type, soapMessageString);
         }
+    }
+
+    enum MessageType {
+        Request,
+        Response,
+        Fault,
     }
 }

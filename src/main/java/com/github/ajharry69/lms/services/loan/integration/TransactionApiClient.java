@@ -4,62 +4,34 @@ import com.github.ajharry69.lms.config.LmsProperties;
 import com.github.ajharry69.lms.services.loan.integration.transaction.wsdl.TransactionsRequest;
 import com.github.ajharry69.lms.services.loan.integration.transaction.wsdl.TransactionsResponse;
 import com.github.ajharry69.lms.services.loan.model.Transaction;
-import com.github.ajharry69.lms.utils.SoapLoggingInterceptor;
+import com.github.ajharry69.lms.utils.soap.LmsWebServiceGatewaySupport;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Component;
-import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
-import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
-import org.springframework.ws.transport.http.HttpUrlConnectionMessageSender;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.Base64.getEncoder;
-
 @Component
 @Slf4j
-public class TransactionApiClient extends WebServiceGatewaySupport {
-    private final LmsProperties lmsProperties;
-
+public class TransactionApiClient extends LmsWebServiceGatewaySupport {
     public TransactionApiClient(
             LmsProperties lmsProperties,
             @Qualifier(value = "transactionMarshaller")
             Jaxb2Marshaller marshaller
     ) {
-        this.lmsProperties = lmsProperties;
-        setMarshaller(marshaller);
-        setUnmarshaller(marshaller);
-        ClientInterceptor[] interceptors = new ClientInterceptor[] {
-                new SoapLoggingInterceptor()
-        };
-        setInterceptors(interceptors);
+        super(lmsProperties, marshaller);
     }
 
     public List<Transaction> getTransactions(String customerNumber) {
         log.info("Fetching transactions from Transaction API for customer number: {}", customerNumber);
-
-        // Set credentials for Basic Authentication in the SOAP request
-        var messageSender = new HttpUrlConnectionMessageSender() {
-            @Override
-            protected void prepareConnection(HttpURLConnection connection) throws IOException {
-                super.prepareConnection(connection);
-                String authString = lmsProperties.username() + ":" + lmsProperties.password();
-                String authEncoded = getEncoder().encodeToString(authString.getBytes());
-                connection.setRequestProperty("Authorization", "Basic " + authEncoded);
-            }
-        };
-        getWebServiceTemplate().setMessageSender(messageSender);
-
         var request = new TransactionsRequest();
         request.setCustomerNumber(customerNumber);
 
         var response = (TransactionsResponse) getWebServiceTemplate().marshalSendAndReceive(
-                "https://trxapitest.credable.io/service/transactionWsdl.wsdl",
+                "https://trxapitest.credable.io/service/",
                 request,
                 new SoapActionCallback("")
         );
