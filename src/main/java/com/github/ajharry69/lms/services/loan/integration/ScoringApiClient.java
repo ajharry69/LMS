@@ -9,6 +9,7 @@ import com.github.ajharry69.lms.services.loan.model.ClientRegistrationResponse;
 import com.github.ajharry69.lms.services.loan.model.RegisterClientRequest;
 import com.github.ajharry69.lms.services.loan.model.ScoringResponse;
 import com.github.ajharry69.lms.services.loan.model.Transaction;
+import com.github.ajharry69.lms.utils.ClientHttpRequestLoggingInterceptor;
 import com.github.ajharry69.lms.utils.ServerUrlProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -28,14 +29,16 @@ public class ScoringApiClient {
     private final ServerUrlProvider serverUrlProvider;
 
     public ScoringApiClient(
-            RestClient.Builder restClientBuilder,
             LmsProperties properties,
-            ServerUrlProvider serverUrlProvider
+            ServerUrlProvider serverUrlProvider,
+            RestClient.Builder restClientBuilder,
+            ClientHttpRequestLoggingInterceptor clientHttpRequestLoggingInterceptor
     ) {
-        this.restClient = restClientBuilder.baseUrl("https://scoringtest.credable.io/api/v1/scoring")
-                .build();
         this.properties = properties;
         this.serverUrlProvider = serverUrlProvider;
+        this.restClient = restClientBuilder.baseUrl("https://scoringtest.credable.io/api/v1/scoring")
+                .requestInterceptor(clientHttpRequestLoggingInterceptor)
+                .build();
     }
 
     private ClientRegistrationResponse registerClient() {

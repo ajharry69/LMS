@@ -4,11 +4,13 @@ import com.github.ajharry69.lms.config.LmsProperties;
 import com.github.ajharry69.lms.services.loan.integration.transaction.wsdl.TransactionsRequest;
 import com.github.ajharry69.lms.services.loan.integration.transaction.wsdl.TransactionsResponse;
 import com.github.ajharry69.lms.services.loan.model.Transaction;
+import com.github.ajharry69.lms.utils.SoapLoggingInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
+import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
 import org.springframework.ws.transport.http.HttpUrlConnectionMessageSender;
 
@@ -32,6 +34,10 @@ public class TransactionApiClient extends WebServiceGatewaySupport {
         this.lmsProperties = lmsProperties;
         setMarshaller(marshaller);
         setUnmarshaller(marshaller);
+        ClientInterceptor[] interceptors = new ClientInterceptor[] {
+                new SoapLoggingInterceptor()
+        };
+        setInterceptors(interceptors);
     }
 
     public List<Transaction> getTransactions(String customerNumber) {
@@ -55,7 +61,7 @@ public class TransactionApiClient extends WebServiceGatewaySupport {
         var response = (TransactionsResponse) getWebServiceTemplate().marshalSendAndReceive(
                 "https://trxapitest.credable.io/service/transactionWsdl.wsdl",
                 request,
-                new SoapActionCallback("https://transaction.credable.com/TransactionsRequest")
+                new SoapActionCallback("")
         );
 
         if (response == null || response.getTransactions() == null) {

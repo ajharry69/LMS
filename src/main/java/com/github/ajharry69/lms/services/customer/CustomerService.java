@@ -1,6 +1,6 @@
 package com.github.ajharry69.lms.services.customer;
 
-import com.github.ajharry69.lms.services.customer.integration.CustomerApiClient;
+import com.github.ajharry69.lms.services.customer.integration.KYCApiClient;
 import com.github.ajharry69.lms.services.customer.model.Customer;
 import com.github.ajharry69.lms.services.customer.model.CustomerRequest;
 import com.github.ajharry69.lms.services.customer.repository.CustomerRepository;
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class CustomerService {
-    private final CustomerApiClient customerApiClient;
+    private final KYCApiClient KYCApiClient;
     private final CustomerRepository repository;
 
     @Transactional
@@ -21,7 +21,7 @@ public class CustomerService {
         log.info("Subscribing customer with number: {}", request.customerNumber());
         return repository.findByNumber(request.customerNumber()).orElseGet(
                 () -> {
-                    var kycCustomer = customerApiClient.getCustomer(request.customerNumber());
+                    var kycCustomer = KYCApiClient.getCustomer(request.customerNumber());
 
                     var customer = repository.save(Customer.builder()
                             .number(kycCustomer.getCustomerNumber())
