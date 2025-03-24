@@ -11,7 +11,7 @@ public record RegisterClientRequest(
 ) {
     public RegisterClientRequest(ServerUrlProvider urlProvider, LmsProperties properties) {
         this(
-                urlProvider.getServerUrl() + "/api/v1/transactions",
+                urlProvider.getServerUrl() + "/api/v1/loans/client-registration",
                 "LMS",
                 properties.username(),
                 properties.password()
