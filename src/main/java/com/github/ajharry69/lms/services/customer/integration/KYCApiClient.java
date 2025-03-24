@@ -5,6 +5,7 @@ import com.github.ajharry69.lms.services.customer.exception.CustomerRetrievalExc
 import com.github.ajharry69.lms.services.customer.integration.wsdl.Customer;
 import com.github.ajharry69.lms.services.customer.integration.wsdl.CustomerRequest;
 import com.github.ajharry69.lms.services.customer.integration.wsdl.CustomerResponse;
+import com.github.ajharry69.lms.services.loan.integration.ClientRegistrationApiClient;
 import com.github.ajharry69.lms.utils.soap.LmsWebServiceGatewaySupport;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,15 +16,21 @@ import org.springframework.ws.client.WebServiceTransportException;
 @Component
 @Slf4j
 public class KYCApiClient extends LmsWebServiceGatewaySupport {
+    private final ClientRegistrationApiClient clientRegistrationApiClient;
+
     public KYCApiClient(
             LmsProperties lmsProperties,
             @Qualifier(value = "kycMarshaller")
-            Jaxb2Marshaller marshaller
+            Jaxb2Marshaller marshaller,
+            ClientRegistrationApiClient clientRegistrationApiClient
     ) {
         super(lmsProperties, marshaller, "https://kycapitest.credable.io/service/");
+        this.clientRegistrationApiClient = clientRegistrationApiClient;
     }
 
     public Customer getCustomer(String customerNumber) {
+        clientRegistrationApiClient.registerClient();
+
         log.info("Fetching customer details from KYC API for customer number: {}", customerNumber);
         var request = new CustomerRequest();
         request.setCustomerNumber(customerNumber);
