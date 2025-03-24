@@ -58,7 +58,7 @@ public class ClientRegistrationApiClient {
 
             var clientResponse = response.getBody();
             log.info("Client registered successfully. Response: {}", clientResponse);
-            return new ClientRegistration(
+            var registration = new ClientRegistration(
                     (long) clientResponse.id(),
                     clientResponse.url(),
                     clientResponse.name(),
@@ -66,6 +66,7 @@ public class ClientRegistrationApiClient {
                     clientResponse.password(),
                     clientResponse.token()
             );
+            return registrationRepository.save(registration);
         });
     }
 }
