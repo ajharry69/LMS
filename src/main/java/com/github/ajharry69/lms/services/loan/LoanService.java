@@ -17,10 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class LoanService {
-    private final CustomerRepository customerRepository;
     private final LoanRepository loanRepository;
-    private final TransactionApiClient transactionApiClient;
+    private final CustomerRepository customerRepository;
     private final ScoringApiClient scoringApiClient;
+    private final TransactionApiClient transactionApiClient;
 
     @Transactional
     public LoanResponse requestLoan(LoanRequest request) {
@@ -35,8 +35,6 @@ public class LoanService {
         }
 
         var transactions = transactionApiClient.getTransactions(request.customerNumber());
-
-        // Send transaction data to the Scoring Engine and get the score.
         var scoringResponse = scoringApiClient.getScore(request.customerNumber(), transactions);
 
         var loanStatus = determineLoanStatus(

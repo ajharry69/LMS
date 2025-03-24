@@ -85,6 +85,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web-services") {
         exclude(group = "org.springframework.boot", module = "spring-boot-starter-tomcat")
     }
+    implementation("org.apache.httpcomponents:httpcore:4.4.6")
+    implementation("org.apache.httpcomponents:httpclient:4.5.13")
     configurations.getByName("jaxws").dependencies.addAll(
         listOf(
             "com.sun.xml.ws:jaxws-tools:3.0.0",

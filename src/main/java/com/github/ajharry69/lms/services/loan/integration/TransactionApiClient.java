@@ -1,6 +1,7 @@
 package com.github.ajharry69.lms.services.loan.integration;
 
 import com.github.ajharry69.lms.config.LmsProperties;
+import com.github.ajharry69.lms.services.loan.exception.TransactionRetrievalException;
 import com.github.ajharry69.lms.services.loan.integration.transaction.wsdl.TransactionsRequest;
 import com.github.ajharry69.lms.services.loan.integration.transaction.wsdl.TransactionsResponse;
 import com.github.ajharry69.lms.services.loan.model.Transaction;
@@ -9,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Component;
-import org.springframework.ws.soap.client.core.SoapActionCallback;
+import org.springframework.ws.client.WebServiceTransportException;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +23,7 @@ public class TransactionApiClient extends LmsWebServiceGatewaySupport {
             @Qualifier(value = "transactionMarshaller")
             Jaxb2Marshaller marshaller
     ) {
-        super(lmsProperties, marshaller);
+        super(lmsProperties, marshaller, "https://trxapitest.credable.io/service/");
     }
 
     public List<Transaction> getTransactions(String customerNumber) {
@@ -30,11 +31,14 @@ public class TransactionApiClient extends LmsWebServiceGatewaySupport {
         var request = new TransactionsRequest();
         request.setCustomerNumber(customerNumber);
 
-        var response = (TransactionsResponse) getWebServiceTemplate().marshalSendAndReceive(
-                "https://trxapitest.credable.io/service/",
-                request,
-                new SoapActionCallback("")
-        );
+        TransactionsResponse response;
+        try {
+            response = (TransactionsResponse) getWebServiceTemplate()
+                    .marshalSendAndReceive(request);
+        } catch (WebServiceTransportException e) {
+            log.error("Failed to retrieve transactions from Transaction API.", e);
+            throw new TransactionRetrievalException();
+        }
 
         if (response == null || response.getTransactions() == null) {
             log.error("Failed to retrieve transactions from Transaction API.");

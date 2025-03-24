@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Component;
-import org.springframework.ws.soap.client.core.SoapActionCallback;
+import org.springframework.ws.client.WebServiceTransportException;
 
 @Component
 @Slf4j
@@ -20,7 +20,7 @@ public class KYCApiClient extends LmsWebServiceGatewaySupport {
             @Qualifier(value = "kycMarshaller")
             Jaxb2Marshaller marshaller
     ) {
-        super(lmsProperties, marshaller);
+        super(lmsProperties, marshaller, "https://kycapitest.credable.io/service/");
     }
 
     public Customer getCustomer(String customerNumber) {
@@ -28,16 +28,20 @@ public class KYCApiClient extends LmsWebServiceGatewaySupport {
         var request = new CustomerRequest();
         request.setCustomerNumber(customerNumber);
 
-        var response = (CustomerResponse) getWebServiceTemplate().marshalSendAndReceive(
-                "https://kycapitest.credable.io/service/",
-                request,
-                new SoapActionCallback("")
-        );
+        CustomerResponse response;
+        try {
+            response = (CustomerResponse) getWebServiceTemplate()
+                    .marshalSendAndReceive(request);
+        } catch (WebServiceTransportException e) {
+            log.error("Failed to retrieve customer details from KYC API.", e);
+            throw new CustomerRetrievalException();
+        }
 
         if (response == null || response.getCustomer() == null) {
             log.error("Failed to retrieve customer details from KYC API.");
             throw new CustomerRetrievalException();
         }
+
         log.info("Successfully retrieved customer details from KYC API.");
         return response.getCustomer();
     }
