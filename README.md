@@ -1,6 +1,6 @@
 ## Start the server
 
-`./gradlew booTestRun --no-daemon`
+`./gradlew booTestRun`
 
 ### Test the APIs
 
@@ -8,4 +8,4 @@ Go to: http://localhost:8080/swagger-ui/index.html
 
 ## Run the tests
 
-`./gradlew clean test --no-daemon`
+`./gradlew clean test`
