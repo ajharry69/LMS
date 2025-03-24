@@ -3,7 +3,6 @@ package com.github.ajharry69.lms.services.loan;
 import com.github.ajharry69.lms.services.loan.model.LoanRequest;
 import com.github.ajharry69.lms.services.loan.model.LoanResponse;
 import com.github.ajharry69.lms.services.loan.model.LoanStatusResponse;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,7 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.mediatype.problem.Problem;
 import org.springframework.http.HttpStatus;
@@ -20,21 +18,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/v1/loans")
 @RequiredArgsConstructor
-@Slf4j
 @Tag(name = "Loans", description = "Operations related to loans")
 public class LoanController {
     private final LoanService loanService;
-
-    @Hidden
-    @PostMapping(value = "/client-registration", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public void clientRegistrationCallback(@RequestBody Map<String, Object> request) {
-        log.info("Received request: {}", request);
-    }
 
     @PostMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
     @Operation(summary = "Request loan")
