@@ -46,7 +46,6 @@ public class ClientRegistrationApiClient {
                     .uri("/client/createClient")
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)
-                    .header(CLIENT_TOKEN_HEADER, properties.clientToken())
                     .body(request)
                     .retrieve()
                     .toEntity(ClientRegistrationResponse.class);
