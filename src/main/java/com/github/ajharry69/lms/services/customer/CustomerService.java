@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class CustomerService {
-    private final KYCApiClient KYCApiClient;
+    private final KYCApiClient kycApiClient;
     private final CustomerRepository repository;
 
     @Transactional
@@ -21,7 +21,7 @@ public class CustomerService {
         log.info("Subscribing customer with number: {}", request.customerNumber());
         return repository.findByNumber(request.customerNumber()).orElseGet(
                 () -> {
-                    var kycCustomer = KYCApiClient.getCustomer(request.customerNumber());
+                    var kycCustomer = kycApiClient.getCustomer(request.customerNumber());
 
                     var customer = repository.save(Customer.builder()
                             .number(kycCustomer.getCustomerNumber())
