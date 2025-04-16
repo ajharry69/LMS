@@ -40,9 +40,11 @@ public class ScoringApiClient extends ClientRegistrationApiClient {
     private String getQueryScoreToken(String customerNumber) {
         log.info("Initiating query score for customer: {}", customerNumber);
 
+        var registerClientResponse = registerClient();
+
         var response = restClient.get()
                 .uri("/scoring/initiateQueryScore/" + customerNumber)
-                .header(CLIENT_TOKEN_HEADER, properties.clientToken())
+                .header(CLIENT_TOKEN_HEADER, registerClientResponse.getToken())
                 .retrieve()
                 .toEntity(String.class);
 
@@ -63,9 +65,11 @@ public class ScoringApiClient extends ClientRegistrationApiClient {
     private ScoringResponse queryScore(String token) {
         log.info("Querying score for token: {}", token);
 
+        var registerClientResponse = registerClient();
+
         var response = restClient.get()
                 .uri("/scoring/queryScore/" + token)
-                .header(CLIENT_TOKEN_HEADER, properties.clientToken())
+                .header(CLIENT_TOKEN_HEADER, registerClientResponse.getToken())
                 .retrieve()
                 .toEntity(ScoringResponse.class);
 
